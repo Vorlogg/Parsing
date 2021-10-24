@@ -9,16 +9,7 @@ months = {"январь": "01", "февраль": "02", "март": "03", "ап�
           "август": "08", "сентябрь": "09", "октябрь": "10", "ноябрь": "11", "декабрь": "12"}
 
 morph = pymorphy2.MorphAnalyzer()
-headers = {
-    'Connection': 'keep-alive',
-    'Cache-Control': 'max-age=0',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 OPR/40.0.2308.81',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'DNT': '1',
-    'Accept-Encoding': 'gzip, deflate, lzma, sdch',
-    'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4'
-}
+
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0",
     "Accept-Encoding": "*",
@@ -26,8 +17,10 @@ headers = {
 }
 jsonDate = []
 NewsUrls = []
-for j in tqdm(range(28)):
-    url = 'https://www.interfax.ru/tags/%D1%E1%E5%F0%E1%E0%ED%EA/page_' + str(j)
+company_id = 6
+company_id_list = {1: ["Аэрофлот","%C0%FD%F0%EE%F4%EB%EE%F2"], 2: ["Газпром", "%C3%E0%E7%EF%F0%EE%EC"], 3: ["ВТБ","%C2%D2%C1"], 4: ["Сбер","%D1%E1%E5%F0%E1%E0%ED%EA"], 5: ["Лукойл","%CB%D3%CA%CE%C9%CB"], 6: ["Aplle","Apple"]}
+for j in tqdm(range(26)):
+    url = 'https://www.interfax.ru/tags/{0}/page_{1}'.format(company_id_list[company_id][1], str(j))
     r = requests.get(url, timeout=10, headers=headers)
     if r.status_code == 200:
         soup = BeautifulSoup(r.text, 'html.parser').find('div', class_='sPageResult')
@@ -62,8 +55,8 @@ for urls in tqdm(NewsUrls):
                 textnews)
             # print(textnews)
             jsonDate.append(
-                {"date_time": dateend, "title": title, "text": textnews, "sourse": "Сбербанк interfax",
-                 "company_id": None,
+                {"date_time": dateend, "title": title, "text": textnews, "sourse": "{0} interfax".format(company_id_list[company_id][0]),
+                 "company_id": company_id,
                  })
 
     except:
@@ -72,5 +65,5 @@ for urls in tqdm(NewsUrls):
 
 # # yyyy-MM-dd
 print(len(jsonDate))
-with open('Sber_interfax(2018-2021).json', 'w', encoding='utf-8') as file:
+with open('{0}_interfax.json'.format(company_id_list[company_id][0]), 'w', encoding='utf-8') as file:
     json.dump(jsonDate, file, ensure_ascii=False,indent=2)

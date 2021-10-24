@@ -63,7 +63,7 @@ for urls in tqdm(NewsUrls):
                 textnews)
             # print(textnews)
             jsonDate.append(
-                {"date_time": dateend, "title": title, "text": textnews, "sourse": "Сбербанк офф сайт", "company_id": None,
+                {"date_time": dateend, "title": title, "text": textnews, "sourse": "Сбербанк офф сайт", "company_id": 4,
                  })
     except:
         print("error")
