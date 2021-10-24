@@ -8,22 +8,13 @@ import pymorphy2
 months = {"январь": "01", "февраль": "02", "март": "03", "апрель": "04", "май": "05", "июнь": "06", "июль": "07",
          "август": "08", "сентябрь": "09", "октябрь": "10", "ноябрь": "11", "декабрь": "12"}
 
-morph = pymorphy2.MorphAnalyzer()
-headers = {
-    'Connection': 'keep-alive',
-    'Cache-Control': 'max-age=0',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 OPR/40.0.2308.81',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'DNT': '1',
-    'Accept-Encoding': 'gzip, deflate, lzma, sdch',
-    'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4'
-}
+
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0",
     "Accept-Encoding": "*",
     "Connection": "keep-alive"
 }
+morph = pymorphy2.MorphAnalyzer()
 jsonDate = []
 NewsUrls = []
 for j in tqdm(range(402)):
@@ -48,7 +39,10 @@ for urls in tqdm(NewsUrls):
             # print(datespl)
             moth = morph.parse(datespl[1])[0].normal_form
             year=datespl[0]
-            day=datespl[2]
+            if len(datespl[2]) != 2:
+                day = "0" + datespl[2]
+            else:
+                day = datespl[2]
             dateend="{0}-{1}-{2} {3}:{4}:{5}".format(year,months[moth],day,"00","00","00")
             # print(dateend)
             # date1=
@@ -63,7 +57,7 @@ for urls in tqdm(NewsUrls):
                 textnews)
             # print(textnews)
             jsonDate.append(
-                {"date_time": dateend, "title": title, "text": textnews, "sourse": "Сбербанк офф сайт", "company_id": 4,
+                {"date_time": dateend, "title": title, "text": textnews, "source": "Сбербанк офф сайт", "company_id": 4,"url":urls
                  })
     except:
         print("error")
