@@ -105,9 +105,8 @@ def parse(id, date, max=100):
         except:
             print("err")
 
-    # # yyyy-MM-dd
-    print(len(jsonDate))
-    with open('{0}_interfax_test.json'.format(company_id_list[company_id][0]), 'w', encoding='utf-8') as file:
+
+    with open('{0}_interfax.json'.format(company_id_list[company_id][0]), 'w', encoding='utf-8') as file:
         json.dump(jsonDate, file, ensure_ascii=False, indent=2)
 
 
