@@ -68,7 +68,7 @@ def parse(id,max):
                 #     textnews)
                 # print(textnews)
                 jsonDate.append(
-                    {"date_time": dateend, "title": title, "text": textnews,
+                    {"datetime": dateend, "title": title, "text": textnews,
                      "source": "{0} smart-lab".format(company_id_list[company_id][0]),
                      "company_id": company_id,"url":urls
                      })

@@ -38,12 +38,12 @@ for urls in tqdm(NewsUrls):
             datespl=date.split()
             # print(datespl)
             moth = morph.parse(datespl[1])[0].normal_form
-            year=datespl[0]
-            if len(datespl[2]) != 2:
-                day = "0" + datespl[2]
+            year=datespl[2]
+            if len(datespl[0]) != 2:
+                day = "0" + datespl[0]
             else:
-                day = datespl[2]
-            dateend="{0}-{1}-{2} {3}:{4}:{5}".format(year,months[moth],day,"00","00","00")
+                day = datespl[0]
+            dateend="{0}-{1}-{2} {3}:{4}:{5}".format(year,months[moth],day,"03","00","00")
             # print(dateend)
             # date1=
             # print(title)
@@ -57,11 +57,11 @@ for urls in tqdm(NewsUrls):
                 textnews)
             # print(textnews)
             jsonDate.append(
-                {"date_time": dateend, "title": title, "text": textnews, "source": "Сбербанк офф сайт", "company_id": 4,"url":urls
+                {"datetime": dateend, "title": title, "text": textnews, "source": "Сбербанк офф сайт", "company_id": 4,"url":urls
                  })
     except:
         print("error")
 # yyyy-MM-dd
 # print(jsonDate)
-with open('Sber_off_site(2018-2021).json', 'w', encoding='utf-8') as file:
+with open('Sber_off_site.json', 'w', encoding='utf-8') as file:
     json.dump(jsonDate, file, ensure_ascii=False,indent=2)

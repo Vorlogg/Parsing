@@ -4,7 +4,7 @@ import re
 import json
 from tqdm import tqdm
 import pymorphy2
-
+from datetime import datetime
 months = {"январь": "01", "февраль": "02", "март": "03", "апрель": "04", "май": "05", "июнь": "06", "июль": "07",
           "август": "08", "сентябрь": "09", "октябрь": "10", "ноябрь": "11", "декабрь": "12"}
 
@@ -15,11 +15,27 @@ headers = {
     "Accept-Encoding": "*",
     "Connection": "keep-alive"
 }
-def parse(id,max):
+datef="2021-10-28 11:00:00"
+# datefrom=datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+def date_format(datespl):
+    year = datespl[3]
+    if len(datespl[1]) != 2:
+        day = "0" + datespl[1]
+    else:
+        day = datespl[1]
+    time = re.sub(",", "", datespl[0])
+    time = time.split(':')
+    moth = morph.parse(datespl[2])[0].normal_form
+    dateend = "{0}-{1}-{2} {3}:{4}:{5}".format(year, months[moth], day, time[0], time[1], "00")
+    return dateend
+
+def parse(id,date,max=100):
+    datefrom = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     jsonDate = []
     NewsUrls = []
     company_id = id
     company_id_list = {1: ["Аэрофлот","%C0%FD%F0%EE%F4%EB%EE%F2"], 2: ["Газпром", "%C3%E0%E7%EF%F0%EE%EC"], 3: ["ВТБ","%C2%D2%C1"], 4: ["Сбер","%D1%E1%E5%F0%E1%E0%ED%EA"], 5: ["Лукойл","%CB%D3%CA%CE%C9%CB"], 6: ["Aplle","Apple"]}
+
     for j in tqdm(range(max)):
         url = 'https://www.interfax.ru/tags/{0}/page_{1}'.format(company_id_list[company_id][1], str(j))
         r = requests.get(url, timeout=10, headers=headers)
@@ -27,6 +43,9 @@ def parse(id,max):
             soup = BeautifulSoup(r.text, 'html.parser').find('div', class_='sPageResult')
             for tag in soup.find_all("h3"):
                 NewsUrls.append("https://www.interfax.ru" + tag.a.get('href'))
+            for dat in soup.find_all("time"):
+                temp=dat.text.split()
+
 
     # print(NewsUrls)
     for urls in tqdm(NewsUrls):
@@ -39,17 +58,14 @@ def parse(id,max):
                 title = soupnews.find("h1").text
                 date = soupnews.find("a", class_="time").text
                 datespl = date.split()
-                year = datespl[3]
-                if len(datespl[1]) != 2:
-                    day = "0" + datespl[1]
-                else:
-                    day = datespl[1]
-                time = re.sub(",", "", datespl[0])
-                time = time.split(':')
-                moth = morph.parse(datespl[2])[0].normal_form
-                dateend = "{0}-{1}-{2} {3}:{4}:{5}".format(year, months[moth], day, time[0], time[1], "00")
+
+                dateend = date_format(datespl)
                 # print(dateend)
                 # print(title)
+                datenews = datetime.strptime(dateend, "%Y-%m-%d %H:%M:%S")
+
+                if datenews<datefrom:
+                    break
                 for text in soupnews.find_all("p"):
                     textnews += text.text
 
@@ -59,7 +75,7 @@ def parse(id,max):
                     textnews)
                 # print(textnews)
                 jsonDate.append(
-                    {"date_time": dateend, "title": title, "text": textnews, "source": "{0} interfax".format(company_id_list[company_id][0]),
+                    {"datetime": dateend, "title": title, "text": textnews, "source": "{0} interfax".format(company_id_list[company_id][0]),
                      "company_id": company_id,"url":urls
                      })
 
@@ -69,11 +85,8 @@ def parse(id,max):
 
     # # yyyy-MM-dd
     print(len(jsonDate))
-    with open('{0}_interfax.json'.format(company_id_list[company_id][0]), 'w', encoding='utf-8') as file:
+    with open('{0}_interfax_test.json'.format(company_id_list[company_id][0]), 'w', encoding='utf-8') as file:
         json.dump(jsonDate, file, ensure_ascii=False,indent=2)
-parse(1,100)
-parse(2,100)
-parse(3,100)
-parse(4,100)
-parse(5,100)
-parse(6,100)
+
+
+parse(4,datef,1)
