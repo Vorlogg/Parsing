@@ -1,16 +1,36 @@
-import requests
-from bs4 import BeautifulSoup
-import json
+from flask import Flask, jsonify, request, make_response, abort
+from SberOfSite import SberOfSite
+from SmartLab import SmartLab
+from interfax import Interfax
+from primpres import Primpress
+app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 
-company_id_list = {1: ["Аэрофлот", "AFLT"], 2: ["Газпром", "Газпром"], 3: ["ВТБ", "ВТБ"], 4: ["Сбер", "Sber"],
-                   5: ["Лукойл", "LKOH"], 6: ["Aplle", "AAPL"]}
-
-for i in company_id_list.items():
-    print(i[1][0])
-    with open("{0}_smart-lab.json".format(i[1][0]), "r") as read_file:
-        data = json.load(read_file)
-
-    for j in data:
-        print(j)
+sber = SberOfSite()
+smartlab = SmartLab()
+interfax=Interfax()
+primpres=Primpress()
 
 
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
+
+@app.route('/tasks', methods=['POST'])
+def create_task():
+    if not request.json or not 'from' and 'id' in request.json:
+        abort(400)
+    id = int(request.json['id'])
+    date = request.json['from']
+    posts = []
+    if request.json['id'] == '4':
+        [posts.append(i) for i in sber.parse(date)]
+    [posts.append(i) for i in smartlab.parse(id, date)]
+    [posts.append(i) for i in interfax.parse(id, date)]
+    [posts.append(i) for i in interfax.parse(id, date)]
+
+    return jsonify(posts), 201
+
+
+if __name__ == '__main__':
+    app.run()
