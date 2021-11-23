@@ -16,8 +16,8 @@ primpres=Primpress()
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
-@app.route('/date', methods=['POST'])
-def get_date():
+@app.route('/data', methods=['POST'])
+def get_data():
     if not request.json or not 'from' and 'id' in request.json:
         abort(400)
     id = int(request.json['id'])
