@@ -3,7 +3,6 @@ from SberOfSite import SberOfSite
 from SmartLab import SmartLab
 from interfax import Interfax
 from primpres import Primpress
-from telegramparser import TelegramParser
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
@@ -11,7 +10,6 @@ sber = SberOfSite()
 smartlab = SmartLab()
 interfax=Interfax()
 primpres=Primpress()
-telegram=TelegramParser()
 
 
 @app.errorhandler(404)
@@ -32,15 +30,12 @@ def get_data():
         [posts.append(i) for i in smartlab.parse(id, date)]
         [posts.append(i) for i in interfax.parse(id, date)]
         [posts.append(i) for i in primpres.parse(id, date)]
-        [posts.append(i) for i in telegram.get_news(id, date)]
     if request.json['source']=='smartlab':
         [posts.append(i) for i in smartlab.parse(id, date)]
     if request.json['source']=='interfax':
         [posts.append(i) for i in interfax.parse(id, date)]
     if request.json['source']=='primpres':
         [posts.append(i) for i in primpres.parse(id, date)]
-    if request.json['source']=='telegram':
-        [posts.append(i) for i in telegram.get_news(id, date)]
     if request.json['source']=='sber':
         [posts.append(i) for i in sber.parse(id, date)]
 
