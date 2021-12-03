@@ -25,23 +25,23 @@ def get_data():
     id = int(request.json['id'])
     date = request.json['from']
     posts = []
-    if request.json['sourse']=='all':
-        print(request.json['sourse'])
+    if request.json['source']=='all':
+        print(request.json['source'])
         if request.json['id'] == '4':
             [posts.append(i) for i in sber.parse(date)]
         [posts.append(i) for i in smartlab.parse(id, date)]
         [posts.append(i) for i in interfax.parse(id, date)]
         [posts.append(i) for i in primpres.parse(id, date)]
         [posts.append(i) for i in telegram.get_news(id, date)]
-    if request.json['sourse']=='smartlab':
+    if request.json['source']=='smartlab':
         [posts.append(i) for i in smartlab.parse(id, date)]
-    if request.json['sourse']=='interfax':
+    if request.json['source']=='interfax':
         [posts.append(i) for i in interfax.parse(id, date)]
-    if request.json['sourse']=='primpres':
+    if request.json['source']=='primpres':
         [posts.append(i) for i in primpres.parse(id, date)]
-    if request.json['sourse']=='telegram':
+    if request.json['source']=='telegram':
         [posts.append(i) for i in telegram.get_news(id, date)]
-    if request.json['sourse']=='sber':
+    if request.json['source']=='sber':
         [posts.append(i) for i in sber.parse(id, date)]
 
 
