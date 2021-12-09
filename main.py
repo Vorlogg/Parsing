@@ -3,6 +3,8 @@ from SberOfSite import SberOfSite
 from SmartLab import SmartLab
 from interfax import Interfax
 from primpres import Primpress
+from bert_predictor import BertPredictor
+
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
@@ -12,12 +14,22 @@ interfax=Interfax()
 primpres=Primpress()
 
 
+bert = BertPredictor()
+
+@app.route('/predict_bert', methods=['POST'])
+def get_predict_bert():
+    if not request.json:
+        abort(400)
+    result = bert.predict(request.json)
+
+    return result, 201
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 @app.route('/data', methods=['POST'])
 def get_data():
+    print(request.headers)
     if not request.json or not 'from' and 'id' in request.json:
         abort(400)
     id = int(request.json['id'])
